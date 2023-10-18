@@ -106,7 +106,7 @@ namespace Gen
                         else
                         {
                             int polygonOldIndex = 1;
-                            for (int polygonIndex = 0; polygonIndex < polygonCount; polygonIndex++)
+                            for (int polygonIndex = 0; polygonIndex < polygonCount - 1; polygonIndex++)
                             {
                                 if (polygonIndex * angleStep < polygonOldIndex * angleStepOld)
                                 {
@@ -137,6 +137,14 @@ namespace Gen
                                 }
                                 polygonOldIndex++;
                             }
+
+                            triangles.Add(vertexCount + polygonCount - 1);
+                            triangles.Add(vertexCount - 1);
+                            triangles.Add(vertexCount - 2);
+
+                            triangles.Add(vertexCount + polygonCount - 1);
+                            triangles.Add(vertexCount - polygonCountOld);
+                            triangles.Add(vertexCount - 1);
 
                             triangles.Add(vertexCount + polygonCount - 1);
                             triangles.Add(vertexCount);
