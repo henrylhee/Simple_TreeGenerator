@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 using static UnityEditor.PlayerSettings;
 using System.Security.Cryptography;
 using Palmmedia.ReportGenerator.Core.Parser.Analysis;
-
+using Unity.VisualScripting;
 
 namespace Gen
 {
@@ -18,7 +18,11 @@ namespace Gen
         [Header("Graph")]
         Graph graph = new Graph();
         [SerializeField]
-        private bool generateNewGraph = false;
+        private bool reloadSettings = false;
+        [SerializeField]
+        private bool generateGraph = false;
+        [SerializeField]
+        private bool generateGraphOnChange = false;
         [SerializeField]
         private bool drawGraph = true;
         [SerializeField]
@@ -26,52 +30,71 @@ namespace Gen
         [SerializeField]
         private bool deleteMesh = false;
 
-        [HideInInspector]
-        public GraphSettings settings;
-        [SerializeField]
-        private GraphModel graphModel;
+        private bool scriptLoaded = false;
+
+        
+        public GraphSettings graphSettingsTemp;
+        private GraphSettings graphSettings;
 
         [SerializeField]
         private Material material;
 
 
-
-
         void OnValidate()
         {
-            Initialize();
-            if (generateNewGraph)
+            if (!scriptLoaded)
             {
-                GenerateGraph();
-                generateNewGraph = false;
+                Initialize();
+                scriptLoaded = true;
             }
-
-            if (generateMesh)
+            else
             {
-                if (graph.branches[0] != null)
+                if (reloadSettings)
                 {
-                    GenerateMesh();
+                    Initialize();
+                    reloadSettings = false;
                 }
-                else
+                else if (generateGraph)
                 {
-                    Debug.Log("No graph to generate a mesh!");
+                    UpdateSettings();
+                    GenerateGraph();
+                    generateGraph = false;
                 }
-                generateMesh = false;
+                else if (generateMesh)
+                {
+                    if (graph.branches[0] != null)
+                    {
+                        GenerateMesh();
+                    }
+                    else
+                    {
+                        Debug.Log("Cant generate a tree mesh. Missing graph!");
+                    }
+                    generateMesh = false;
+                }
+                else if (deleteMesh)
+                {
+                    GetComponent<MeshFilter>().mesh = null;
+                    deleteMesh = false;
+                }
             }
-
-            if (deleteMesh)
-            {
-                GetComponent<MeshFilter>().mesh = null;
-                deleteMesh = false;
-            }
-
-            enabled = true;
         }
 
         private void Initialize()
         {
             Debug.Log("Initialize.");
-            InitializeSettings();
+            
+            new GraphModel();
+            GraphModel.Instance.Initialize(graphSettings);
+            graphSettingsTemp = graphSettings;
+            graphSettingsTemp.OnSettingsChanged.AddListener(SettingsChanged);
+        }
+
+        private void UpdateSettings()
+        {
+            Debug.Log("Update settings");
+
+            GraphModel.Instance.Initialize(graphSettingsTemp);
         }
 
         private void GenerateGraph()
@@ -86,12 +109,21 @@ namespace Gen
             GetComponent<MeshRenderer>().material = material;
         }
 
+        private void SettingsChanged()
+        {
+            UpdateSettings();
+            if (generateGraphOnChange)
+            {
+                GenerateGraph();
+            }
+        }
+
         //Draw the Graph
         private void OnDrawGizmos()
         {
             if (drawGraph && graph.branches != null)
             {
-                float thicknessToLength = GraphSettings.Instance.ThicknessToSegmentLength;
+                float thicknessToLength = GraphModel.Instance.ThicknessToSegmentLength;
 
                 foreach (Branch branch in graph.branches)
                 {
@@ -108,12 +140,6 @@ namespace Gen
                     }
                 }
             }
-        }
-
-        private void InitializeSettings()
-        {
-            settings = new GraphSettings();
-            GraphSettings.Instance.Initialize(graphModel);
         }
     }
 }

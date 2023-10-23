@@ -1,114 +1,116 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Events;
 
 namespace Gen
 {
-    [CreateAssetMenu(fileName = "GraphModel", menuName = "ScriptableObjects/GraphModel")]
-    public class GraphModel : ScriptableObject
+    [ExecuteInEditMode]
+    public class GraphModel : MonoBehaviour
     {
         //------------Settings--------------
-        [SerializeField]
-        private float phyllotaxis = 120;
-        public float Phyllotaxis { get => phyllotaxis; }
+        public float Phyllotaxis;
 
-        [SerializeField]
-        private float branchingAngle = 80;
-        public float BranchingAngle { get => branchingAngle; }
+        public float BranchingAngle;
 
-        [SerializeField]
-        private float startThickness = 1;
-        public float StartThickness { get => startThickness; }
+        public float StartThickness;
 
-        [SerializeField]
-        private Vector3 startPosition = new Vector3(0, 0, 0);
-        public Vector3 StartPosition { get => startPosition; }
+        public Vector3 StartPosition;
 
-        [SerializeField]
-        private Vector3 startDirection = new Vector3(0, 1, 0);
-        public Vector3 StartDirection { get => startDirection; }
+        public Vector3 StartDirection;
 
-        [SerializeField]
-        private float thicknessSplit = 0.7f;
-        public float ThicknessSplit { get => thicknessSplit; }
+        public float ThicknessSplit;
 
-        [SerializeField]
-        private float thicknessToSegmentLength = 0.05f;
-        public float ThicknessToSegmentLength { get => thicknessToSegmentLength; }
+        public float ThicknessToSegmentLength;
 
-        [SerializeField]
-        private float terminalPerceptionAngle;
-        public float TerminalPerceptionAngle { get => terminalPerceptionAngle; }
+        public float TerminalPerceptionAngle;
 
-        [SerializeField]
-        private float randomGrowthConeAngle = 15;
-        public float RandomGrowthConeAngle { get => randomGrowthConeAngle; }
+        public float RandomGrowthConeAngle;
 
-        [SerializeField]
-        private float splitChance = 0.15f;
-        public float SplitChance { get => splitChance; }
+        public float SplitChance;
 
-        [SerializeField]
-        private float splitChanceIncreasePerSegment = 0.01f;
-        public float SplitChanceIncreasePerSegment { get => splitChanceIncreasePerSegment; }
+        public float SplitChanceIncreasePerSegment;
 
-        [SerializeField]
-        private float lastSegmentsWithoutSplitChance = 2;
-        public float LastSegmentsWithoutSplitChance { get => lastSegmentsWithoutSplitChance; }
+        public float LastSegmentsWithoutSplitChance;
 
-        [SerializeField]
-        private float firstSegmentsWithoutSplitChance = 5;
-        public float FirstSegmentsWithoutSplitChance { get => firstSegmentsWithoutSplitChance; }
-
-        [SerializeField]
-        private float maxLength = 10;
-        public float MaxLength { get => maxLength; }
+        public float FirstSegmentsWithoutSplitChance;
 
 
+        public float MaxLength;
 
-        //percentage based
-        [Header("Percentage based values")]
-        [SerializeField]
-        private float noSplitStart = 0.03f;
-        public float NoSplitStart { get => noSplitStart; }
 
-        [SerializeField]
-        private float noSplitEnd = 0.03f;
-        public float NoSplitEnd { get => noSplitEnd; }
-
-        [SerializeField]
-        private float firstSplit = 0.2f;
-        public float FirstSplit { get => firstSplit; }
-
-        [SerializeField]
-        private float minThicknessRelative = 0.04f;
-        public float MinThicknessRelative { get => minThicknessRelative; }
-
-        //Gizmo settings
-        //[SerializeField]
-        //private float s = 0.2f;
-        //public float S { get => s; }
+        public int NoSplitBranchSegments;
+        public float NoSplitEndLengthAbsolute;
+        public float FirstSplitLengthAbsolute;
+        public float MinThicknessAbsolute;
 
 
         //Mesh settings
-        [Header("Mesh settings")]
-        [SerializeField, Range(0f, 1f)]
-        private float deltaT = 0.1f;
-        public float DeltaT { get => deltaT; }
+        public float DeltaT;
+        public float CurvatureFactor;
+        public float MeshDetailLong;
+        public int MeshDetailLat;
 
-        //[SerializeField, Range(0f, 1f)]
-        private float curvatureFactor = 0.2f;
-        public float CurvatureFactor { get => curvatureFactor; }
 
-        [SerializeField, Range(0f, 30f),Tooltip("Angle of the difference in direction of the longitudinal growing mesh at whom a new segment is created.")]
-        private float meshDetailLong = 5f;
-        public float MeshDetailLong { get => meshDetailLong; }
+        private static GraphModel _instance;
 
-        [SerializeField, Range(0f, 30f),Tooltip("Amount of vertices in a mesh plane at maximum thickness.")]
-        private int meshDetailLat = 30;
-        public int MeshDetailLat { get => meshDetailLat; }
+        public static GraphModel Instance { get { return _instance; } }
+
+
+        public GraphModel()
+        {
+            if (_instance != null && _instance != this)
+            {
+                Destroy(_instance.gameObject);
+            }
+            else
+            {
+                _instance = this;
+            }
+        }
+
+        public void Initialize(GraphSettings settings)
+        {
+            Phyllotaxis = settings.Phyllotaxis;
+
+            BranchingAngle = settings.BranchingAngle;
+
+            StartThickness = settings.StartThickness;
+
+            StartThickness = settings.StartThickness;
+
+            StartDirection = settings.StartDirection;
+
+            ThicknessSplit = settings.ThicknessSplit;
+
+            ThicknessToSegmentLength = settings.ThicknessToSegmentLength;
+
+            TerminalPerceptionAngle = settings.TerminalPerceptionAngle;
+
+            RandomGrowthConeAngle = settings.RandomGrowthConeAngle;
+
+            SplitChance = settings.SplitChance;
+
+            SplitChanceIncreasePerSegment = settings.SplitChanceIncreasePerSegment;
+
+            LastSegmentsWithoutSplitChance = settings.LastSegmentsWithoutSplitChance;
+
+            FirstSegmentsWithoutSplitChance = settings.FirstSegmentsWithoutSplitChance;
+
+            MaxLength = settings.MaxLength;
+
+            NoSplitBranchSegments = settings.NoSplitBranchSegments;
+            NoSplitEndLengthAbsolute = settings.MaxLength * settings.NoSplitEndLengthRelative;
+            FirstSplitLengthAbsolute = settings.MaxLength * settings.FirstSplitLengthRelative;
+            MinThicknessAbsolute = settings.StartThickness * settings.MinThicknessRelative;
+
+            //Mesh settings
+            DeltaT = settings.DeltaT;
+            CurvatureFactor = settings.CurvatureFactor;
+            MeshDetailLong = settings.MeshDetailLong;
+            MeshDetailLat = settings.MeshDetailLat;
+        }
     }
 }
-
 

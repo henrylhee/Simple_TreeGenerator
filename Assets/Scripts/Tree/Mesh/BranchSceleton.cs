@@ -31,7 +31,7 @@ namespace Gen
             {
                 curvature = Vector3.Angle(currentDirection, internode.direction);
 
-                if (curvature > GraphSettings.Instance.MeshDetailLong)
+                if (curvature > GraphModel.Instance.MeshDetailLong)
                 {
                     currentDirection = internode.direction;
                     knots.Add(new Knot(internode.position, internode.direction, internode.thickness));

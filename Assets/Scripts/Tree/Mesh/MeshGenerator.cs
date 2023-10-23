@@ -11,8 +11,8 @@ namespace Gen
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class MeshGenerator
     {
-        readonly float thicknessToLength = GraphSettings.Instance.ThicknessToSegmentLength;
-        readonly int meshDetailLat = GraphSettings.Instance.MeshDetailLat;
+        readonly float thicknessToLength = GraphModel.Instance.ThicknessToSegmentLength;
+        readonly int meshDetailLat = GraphModel.Instance.MeshDetailLat;
         readonly float PI2 = Mathf.PI * 2f;
 
 
@@ -178,7 +178,7 @@ namespace Gen
         private int GetPolygonCount(float thickness)
         {
 
-            return Mathf.Max(3, Mathf.CeilToInt((thickness * meshDetailLat) / GraphSettings.Instance.StartThickness));
+            return Mathf.Max(3, Mathf.CeilToInt((thickness * meshDetailLat) / GraphModel.Instance.StartThickness));
         }
     }
 }

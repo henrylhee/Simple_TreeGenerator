@@ -18,12 +18,14 @@ namespace Gen
         private float initLength;
         private float currentLength;
         private float endLength;
+        private int firstSplitInternode;
+        private bool hasSplit;
 
         private float currentThickness;
 
         private Internode currentInternode;
 
-        public Branch(Internode initInternode, float initLength)
+        public Branch(Internode initInternode, float initLength, bool hasSplit)
         {
             internodes = new List<Internode>();
             currentThickness = initInternode.thickness;
@@ -32,7 +34,12 @@ namespace Gen
             this.initLength = initLength;
             currentLength = initLength;
             endLength = 0;
-
+            this.hasSplit = hasSplit;
+            if (!hasSplit) 
+            {
+                firstSplitInternode = Mathf.RoundToInt(GraphModel.Instance.FirstSplitLengthAbsolute / 
+                                      (initInternode.thickness * GraphModel.Instance.ThicknessToSegmentLength));
+            }
             currentInternode = initInternode;
             internodes.Add(currentInternode);
         }
@@ -45,29 +52,47 @@ namespace Gen
 
         public void GenerateInternode()
         {
-            float segmentLength = currentThickness * GraphSettings.Instance.ThicknessToSegmentLength;
+            float segmentLength = currentThickness * GraphModel.Instance.ThicknessToSegmentLength;
             currentLength += segmentLength;
             currentInternode = currentInternode.FindNext(segmentLength, currentThickness);
             internodes.Add(currentInternode);
+            bool _hastSplit = hasSplit;
 
-            if (currentLength >= GraphSettings.Instance.MaxLength || currentThickness <= GraphSettings.Instance.MinThicknessAbsolute)
+            if (hasSplit == false)
+            {
+                if (firstSplitInternode == internodes.Count-1)
+                {
+                    Debug.Log("First split internode: " + firstSplitInternode);
+                    BranchSplit();
+                    hasSplit = true;
+                }
+            }
+            else if (currentLength >= GraphModel.Instance.MaxLength || currentThickness <= GraphModel.Instance.MinThicknessAbsolute)
             {
                 endLength += segmentLength;
 
-                if(endLength > GraphSettings.Instance.NoSplitEndLength)
+                if(endLength > GraphModel.Instance.NoSplitEndLengthAbsolute)
                 {
                     return;
                 }
             }
-            else if (Random.Range(0f, 1f) < GraphSettings.Instance.SplitChance && currentLength - initLength > GraphSettings.Instance.NoSplitStartLength)
+            else if (internodes.Count > GraphModel.Instance.NoSplitBranchSegments)
             {
-                float splitInitThickness = currentThickness * Mathf.Sqrt((1 - GraphSettings.Instance.ThicknessSplit));
-                NewBranch?.Invoke(new Branch(currentInternode.GetSplitInternode(phyllotaxisAngle, splitInitThickness), currentLength));
-                phyllotaxisAngle += GraphSettings.Instance.Phyllotaxis;
-                currentThickness *= Mathf.Sqrt((GraphSettings.Instance.ThicknessSplit));
+                if (Random.Range(0f, 1f) < GraphModel.Instance.SplitChance)
+                {
+                    BranchSplit();
+                }
             }
-
+            
             GenerateInternode();
+        }
+
+        private void BranchSplit()
+        {
+            float splitInitThickness = currentThickness * Mathf.Sqrt((1 - GraphModel.Instance.ThicknessSplit));
+            NewBranch?.Invoke(new Branch(currentInternode.GetSplitInternode(phyllotaxisAngle, splitInitThickness), currentLength, true));
+            phyllotaxisAngle += GraphModel.Instance.Phyllotaxis;
+            currentThickness *= Mathf.Sqrt((GraphModel.Instance.ThicknessSplit));
         }
     }
 }

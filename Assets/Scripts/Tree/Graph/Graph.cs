@@ -23,16 +23,16 @@ namespace Gen
 
             if (branches.Count == 0)
             {
-                Debug.Log("max length: " + GraphSettings.Instance.MaxLength);
-                Debug.Log("min thickness absolute: " + GraphSettings.Instance.MinThicknessAbsolute);
-                Debug.Log("Generate tree from position: " + GraphSettings.Instance.StartPosition);
+                Debug.Log("max length: " + GraphModel.Instance.MaxLength);
+                Debug.Log("min thickness absolute: " + GraphModel.Instance.MinThicknessAbsolute);
+                Debug.Log("Generate tree from position: " + GraphModel.Instance.StartPosition);
             }
             else
             {
                 branches = new List<Branch>();
-                Debug.Log("Generating new tree from position: " + GraphSettings.Instance.StartPosition);
+                Debug.Log("Generating new tree from position: " + GraphModel.Instance.StartPosition);
             }
-            branches.Add(new Branch(new Internode(GraphSettings.Instance.StartPosition, GraphSettings.Instance.StartDirection, GraphSettings.Instance.StartThickness), 0));
+            branches.Add(new Branch(new Internode(GraphModel.Instance.StartPosition, GraphModel.Instance.StartDirection, GraphModel.Instance.StartThickness), 0, false));
             branches[0].NewBranch.AddListener(Split);
             branches[0].Generate();
         }

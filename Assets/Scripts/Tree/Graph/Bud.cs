@@ -17,7 +17,7 @@ namespace Gen
         {
             position = pos;
             initGrowDir = dir;
-            finalGrowDir = Helper.getRandomVectorInCone(GraphSettings.Instance.RandomGrowthConeAngle, initGrowDir);
+            finalGrowDir = Helper.getRandomVectorInCone(GraphModel.Instance.RandomGrowthConeAngle, initGrowDir);
         }
 
 
@@ -30,7 +30,7 @@ namespace Gen
         {
             Vector3 rightRotated = Quaternion.AngleAxis(Vector3.Angle(Vector3.up, startDir), Vector3.Cross(Vector3.up, startDir)) * Vector3.right;
             Vector3 resultPhyllo = Quaternion.AngleAxis(phyllo, startDir) * rightRotated;
-            return Quaternion.AngleAxis(GraphSettings.Instance.BranchingAngle, Vector3.Cross(startDir, resultPhyllo)) * startDir;
+            return Quaternion.AngleAxis(GraphModel.Instance.BranchingAngle, Vector3.Cross(startDir, resultPhyllo)) * startDir;
         }
     }
 }
