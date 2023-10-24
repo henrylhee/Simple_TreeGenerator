@@ -7,7 +7,7 @@ using UnityEngine.Events;
 namespace Gen
 {
     [ExecuteInEditMode]
-    public class GraphModel : MonoBehaviour
+    public class GraphModel
     {
         //------------Settings--------------
         public float Phyllotaxis;
@@ -55,20 +55,30 @@ namespace Gen
 
         private static GraphModel _instance;
 
-        public static GraphModel Instance { get { return _instance; } }
-
-
-        public GraphModel()
-        {
-            if (_instance != null && _instance != this)
-            {
-                Destroy(_instance.gameObject);
-            }
-            else
-            {
-                _instance = this;
-            }
+        public static GraphModel Instance
+        { 
+            get 
+            { 
+                if (_instance == null)
+                {
+                    _instance = new GraphModel();
+                }
+                return _instance; 
+            } 
         }
+
+
+        //public GraphModel()
+        //{
+        //    if (_instance != null && _instance != this)
+        //    {
+        //        _instance = null;
+        //    }
+        //    else
+        //    {
+        //        _instance = this;
+        //    }
+        //}
 
         public void Initialize(GraphSettings settings)
         {

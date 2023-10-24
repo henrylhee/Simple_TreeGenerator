@@ -34,7 +34,9 @@ namespace Gen
 
         
         public GraphSettings graphSettingsTemp;
+        
         private GraphSettings graphSettings;
+        public GraphModel graphModel;
 
         [SerializeField]
         private Material material;
@@ -83,10 +85,11 @@ namespace Gen
         private void Initialize()
         {
             Debug.Log("Initialize.");
-            
-            new GraphModel();
+            Debug.Log("------------>"+graphSettings);
+            graphSettings = Resources.Load<GraphSettings>("Settings/Test");
+            Debug.Log(graphSettings);
             GraphModel.Instance.Initialize(graphSettings);
-            graphSettingsTemp = graphSettings;
+            graphSettingsTemp = Instantiate(graphSettings);
             graphSettingsTemp.OnSettingsChanged.AddListener(SettingsChanged);
         }
 
