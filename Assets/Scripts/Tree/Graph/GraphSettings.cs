@@ -32,7 +32,7 @@ namespace Gen
         private Vector3 startDirection = new Vector3(0, 1, 0);
         public Vector3 StartDirection { get => startDirection; }
 
-        [SerializeField]
+        [SerializeField, Range(0.5f,1)]
         private float thicknessSplit = 0.7f;
         public float ThicknessSplit { get => thicknessSplit; }
 

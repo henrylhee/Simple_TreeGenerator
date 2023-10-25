@@ -10,47 +10,47 @@ namespace Gen
     public class GraphModel
     {
         //------------Settings--------------
-        public float Phyllotaxis;
+        public float Phyllotaxis { get; private set; }
 
-        public float BranchingAngle;
+        public float BranchingAngle { get; private set; }
 
-        public float StartThickness;
+        public float StartThickness { get; private set; }
 
-        public Vector3 StartPosition;
+        public Vector3 StartPosition { get; private set; }
 
-        public Vector3 StartDirection;
+        public Vector3 StartDirection { get; private set; }
 
-        public float ThicknessSplit;
+        public float ThicknessSplit { get; private set; }
 
-        public float ThicknessToSegmentLength;
+        public float ThicknessToSegmentLength { get; private set; }
 
-        public float TerminalPerceptionAngle;
+        public float TerminalPerceptionAngle { get; private set; }
 
-        public float RandomGrowthConeAngle;
+        public float RandomGrowthConeAngle { get; private set; }
 
-        public float SplitChance;
+        public float SplitChance { get; private set; }
 
-        public float SplitChanceIncreasePerSegment;
+        public float SplitChanceIncreasePerSegment { get; private set; }
 
-        public float LastSegmentsWithoutSplitChance;
+        public float LastSegmentsWithoutSplitChance { get; private set; }
 
-        public float FirstSegmentsWithoutSplitChance;
-
-
-        public float MaxLength;
+        public float FirstSegmentsWithoutSplitChance { get; private set; }
 
 
-        public int NoSplitBranchSegments;
-        public float NoSplitEndLengthAbsolute;
-        public float FirstSplitLengthAbsolute;
-        public float MinThicknessAbsolute;
+        public float MaxLength { get; private set; }
+
+
+        public int NoSplitBranchSegments { get; private set; }
+        public float NoSplitEndLengthAbsolute { get; private set; }
+        public float FirstSplitLengthAbsolute { get; private set; }
+        public float MinThicknessAbsolute { get; private set; }
 
 
         //Mesh settings
-        public float DeltaT;
-        public float CurvatureFactor;
-        public float MeshDetailLong;
-        public int MeshDetailLat;
+        public float DeltaT { get; private set; }
+        public float CurvatureFactor { get; private set; }
+        public float MeshDetailLong { get; private set; }
+        public int MeshDetailLat { get; private set; }
 
 
         private static GraphModel _instance;

@@ -25,28 +25,42 @@ namespace Gen
         private bool generateGraphOnChange = false;
         [SerializeField]
         private bool drawGraph = true;
+
+        [Header("Mesh")]
         [SerializeField]
         private bool generateMesh = false;
         [SerializeField]
         private bool deleteMesh = false;
+        [Header("Leaves")]
+        [SerializeField]
+        private bool generateLeaf = false;
+        [SerializeField]
+        private bool populateLeaves = false;
+        [SerializeField]
+        private GameObject leafPreview;
+        [SerializeField]
+        private GameObject leaf;
 
         private bool scriptLoaded = false;
 
         
         public GraphSettings graphSettingsTemp;
-        
         private GraphSettings graphSettings;
-        public GraphModel graphModel;
 
-        [SerializeField]
-        private Material material;
+        public LeafSettings leafSettingsTemp;
+        private LeafSettings leafSettings;
+
+        private LeafGeneration leafGeneration;
+        private MeshGeneration meshGeneration;
+        
+        
 
 
         void OnValidate()
         {
             if (!scriptLoaded)
             {
-                Initialize();
+                EditorAwake();
                 scriptLoaded = true;
             }
             else
@@ -58,7 +72,7 @@ namespace Gen
                 }
                 else if (generateGraph)
                 {
-                    UpdateSettings();
+                    GraphModel.Instance.Initialize(graphSettingsTemp);
                     GenerateGraph();
                     generateGraph = false;
                 }
@@ -79,26 +93,36 @@ namespace Gen
                     GetComponent<MeshFilter>().mesh = null;
                     deleteMesh = false;
                 }
+                else if (generateLeaf)
+                {
+                    LeafModel.Instance.Initialize(leafSettingsTemp);
+                    GenerateLeaf();
+                    generateLeaf = false;
+                }
             }
         }
 
         private void Initialize()
         {
             Debug.Log("Initialize.");
-            Debug.Log("------------>"+graphSettings);
-            graphSettings = Resources.Load<GraphSettings>("Settings/Test");
-            Debug.Log(graphSettings);
+
+            graphSettings = Resources.Load<GraphSettings>("Settings/Graph/GraphSettings");
             GraphModel.Instance.Initialize(graphSettings);
             graphSettingsTemp = Instantiate(graphSettings);
-            graphSettingsTemp.OnSettingsChanged.AddListener(SettingsChanged);
+            graphSettingsTemp.OnSettingsChanged.AddListener(GraphSettingsChanged);
+
+            leafSettings = Resources.Load<LeafSettings>("Settings/Leaves/LeafSettings");
+            LeafModel.Instance.Initialize(leafSettings);
+            leafSettingsTemp = Instantiate(leafSettings);
+            leafSettingsTemp.OnSettingsChanged.AddListener(LeafSettingsChanged);
         }
 
-        private void UpdateSettings()
+        private void EditorAwake()
         {
-            Debug.Log("Update settings");
-
-            GraphModel.Instance.Initialize(graphSettingsTemp);
+            meshGeneration = new MeshGeneration();
+            leafGeneration = new LeafGeneration();
         }
+
 
         private void GenerateGraph()
         {
@@ -107,18 +131,28 @@ namespace Gen
 
         private void GenerateMesh()
         {
-            MeshGenerator meshGenerator = new MeshGenerator();
-            GetComponent<MeshFilter>().mesh = meshGenerator.Generate(graph.branches, transform);
-            GetComponent<MeshRenderer>().material = material;
+            GetComponent<MeshFilter>().mesh = meshGeneration.Generate(graph.branches, transform);
         }
 
-        private void SettingsChanged()
+        private void GenerateLeaf()
         {
-            UpdateSettings();
+            leaf = leafGeneration.Generate(leafPreview, leaf);
+        }
+
+        private void GraphSettingsChanged()
+        {
+            Debug.Log("graph settings changed");
+            GraphModel.Instance.Initialize(graphSettingsTemp);
             if (generateGraphOnChange)
             {
                 GenerateGraph();
             }
+        }
+
+        private void LeafSettingsChanged()
+        {
+            Debug.Log("leaf settings changed");
+            LeafModel.Instance.Initialize(leafSettingsTemp);
         }
 
         //Draw the Graph
