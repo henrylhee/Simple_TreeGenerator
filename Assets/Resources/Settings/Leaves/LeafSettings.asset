@@ -78,6 +78,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   color: {r: 0, g: 0.4433962, b: 0.06560414, a: 0}
   leafSizeX: 0.064
-  leafSizeY: 0.048
   resolutionX: 64
   resolutionY: 48
+  twigSpawnChance: 0.373
+  twigRandomGrowthConeAngle: 11
+  thicknessToTwigLength: 5.2
+  leafStepsRelative: 0.096

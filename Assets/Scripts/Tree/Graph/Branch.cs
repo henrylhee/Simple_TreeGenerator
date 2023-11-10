@@ -12,6 +12,9 @@ namespace Gen
         public UnityEvent<Branch> NewBranch = new UnityEvent<Branch>();
 
         public List<Internode> internodes {get; private set;}
+
+        public List<TwigSpawnData> twigSpawnData { get; private set;}
+
         public float phyllotaxisAngle { get; private set;}
 
 
@@ -28,6 +31,7 @@ namespace Gen
         public Branch(Internode initInternode, float initLength, bool hasSplit)
         {
             internodes = new List<Internode>();
+            twigSpawnData = new List<TwigSpawnData>();
             currentThickness = initInternode.thickness;
 
             phyllotaxisAngle = 0;
@@ -57,6 +61,11 @@ namespace Gen
             currentInternode = currentInternode.FindNext(segmentLength, currentThickness);
             internodes.Add(currentInternode);
             bool _hastSplit = hasSplit;
+
+            if (currentThickness <= GraphModel.Instance.LeafSpawnThicknessLimit)
+            {
+                twigSpawnData.Add(new TwigSpawnData(currentInternode.position, currentInternode.direction, currentThickness));
+            }
 
             if (hasSplit == false)
             {

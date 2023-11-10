@@ -87,11 +87,6 @@ namespace Gen
         private float minThicknessRelative = 0.04f;
         public float MinThicknessRelative { get => minThicknessRelative; }
 
-        //Gizmo settings
-        //[SerializeField]
-        //private float s = 0.2f;
-        //public float S { get => s; }
-
 
         //Mesh settings
         [Header("Mesh settings")]
@@ -110,6 +105,14 @@ namespace Gen
         [SerializeField, Range(0f, 30f),Tooltip("Amount of vertices in a mesh plane at maximum thickness.")]
         private int meshDetailLat = 30;
         public int MeshDetailLat { get => meshDetailLat; }
+
+
+        [Header("Leaf spawn")]
+        [SerializeField]
+        float leafSpawnThicknessRelative;
+        public float LeafSpawnThicknessRelative { get => leafSpawnThicknessRelative; }
+
+
 
         private void OnValidate()
         {

@@ -52,6 +52,9 @@ namespace Gen
         public float MeshDetailLong { get; private set; }
         public int MeshDetailLat { get; private set; }
 
+        //leaf 
+        public float LeafSpawnThicknessLimit { get; private set; }
+
 
         private static GraphModel _instance;
 
@@ -120,6 +123,10 @@ namespace Gen
             CurvatureFactor = settings.CurvatureFactor;
             MeshDetailLong = settings.MeshDetailLong;
             MeshDetailLat = settings.MeshDetailLat;
+
+            //leaf spawn
+            LeafSpawnThicknessLimit = (StartThickness - MinThicknessAbsolute) * settings.LeafSpawnThicknessRelative
+                                      + MinThicknessAbsolute;                                          
         }
     }
 }

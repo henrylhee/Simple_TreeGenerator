@@ -35,11 +35,15 @@ namespace Gen
         [SerializeField]
         private bool generateLeaf = false;
         [SerializeField]
-        private bool populateLeaves = false;
+        private bool spawnLeaves = false;
+        [SerializeField]
+        private bool removeLeaves = false;
         [SerializeField]
         private GameObject leafPreview;
         [SerializeField]
-        private GameObject leaf;
+        private GameObject leaves;
+
+        GameObject leaveContainer;
 
         private bool scriptLoaded = false;
 
@@ -52,7 +56,7 @@ namespace Gen
 
         private LeafGeneration leafGeneration;
         private MeshGeneration meshGeneration;
-        
+        private LeafSpawner leafSpawner;
         
 
 
@@ -60,7 +64,7 @@ namespace Gen
         {
             if (!scriptLoaded)
             {
-                EditorAwake();
+                Initialize();
                 scriptLoaded = true;
             }
             else
@@ -72,7 +76,6 @@ namespace Gen
                 }
                 else if (generateGraph)
                 {
-                    GraphModel.Instance.Initialize(graphSettingsTemp);
                     GenerateGraph();
                     generateGraph = false;
                 }
@@ -80,6 +83,7 @@ namespace Gen
                 {
                     if (graph.branches[0] != null)
                     {
+                        GetComponent<MeshFilter>().mesh = null;
                         GenerateMesh();
                     }
                     else
@@ -95,9 +99,32 @@ namespace Gen
                 }
                 else if (generateLeaf)
                 {
-                    LeafModel.Instance.Initialize(leafSettingsTemp);
-                    GenerateLeaf();
-                    generateLeaf = false;
+                    if (graph.branches[0] != null)
+                    {
+                        GenerateLeaf();
+                        generateLeaf = false;
+                    }
+                    else
+                    {
+                        Debug.Log("Cant generate a tree mesh. Missing graph!");
+                    }
+                }
+                else if (spawnLeaves)
+                {
+                    spawnLeaves = false;
+                    UnityEditor.EditorApplication.delayCall += () =>
+                    {
+                        //RemoveLeaves();
+                        SpawnLeaves();
+                    };   
+                }
+                else if (removeLeaves)
+                {
+                    removeLeaves = false;
+                    UnityEditor.EditorApplication.delayCall += () =>
+                    {
+                        RemoveLeaves();
+                    };
                 }
             }
         }
@@ -105,6 +132,9 @@ namespace Gen
         private void Initialize()
         {
             Debug.Log("Initialize.");
+
+            meshGeneration = new MeshGeneration();
+            leafGeneration = new LeafGeneration();
 
             graphSettings = Resources.Load<GraphSettings>("Settings/Graph/GraphSettings");
             GraphModel.Instance.Initialize(graphSettings);
@@ -115,12 +145,6 @@ namespace Gen
             LeafModel.Instance.Initialize(leafSettings);
             leafSettingsTemp = Instantiate(leafSettings);
             leafSettingsTemp.OnSettingsChanged.AddListener(LeafSettingsChanged);
-        }
-
-        private void EditorAwake()
-        {
-            meshGeneration = new MeshGeneration();
-            leafGeneration = new LeafGeneration();
         }
 
 
@@ -136,7 +160,20 @@ namespace Gen
 
         private void GenerateLeaf()
         {
-            leaf = leafGeneration.Generate(leafPreview, leaf);
+            leafPreview = leafGeneration.GenerateLeaf(leafPreview);
+        }
+
+        private void SpawnLeaves()
+        {
+            leafGeneration.SpawnLeaves(graph.branches, transform, leaves);
+        }
+
+        private void RemoveLeaves()
+        {
+            if(this.transform.childCount != 0)
+            {
+                DestroyImmediate(this.transform.GetChild(0).gameObject);
+            }
         }
 
         private void GraphSettingsChanged()

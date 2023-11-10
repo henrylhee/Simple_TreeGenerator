@@ -13,7 +13,9 @@ namespace Gen
 
         public AnimationCurve ContourCurve { get; private set; }
 
-        public Color Color { get; private set; }
+        public Color Color1 { get; private set; }
+        public Color Color2 { get; private set; }
+        public Color Color3 { get; private set; }
 
         public float LeafSizeX { get; private set; }
 
@@ -22,6 +24,14 @@ namespace Gen
         public int ResolutionX { get; private set; }
 
         public int ResolutionY { get; private set; }
+
+        public float TwigSpawnChance { get; private set; }
+
+        public float TwigRandomGrowthConeAngle { get; private set; }
+
+        public float ThicknessToTwigLength { get; private set; }
+
+        public float LeafStepsRelative { get; private set; }
 
 
         private static LeafModel _instance;
@@ -42,11 +52,14 @@ namespace Gen
         {
             StemRelativeThickness = settings.StemRelativeThickness;
             ContourCurve = settings.ContourCurve;
-            Color = settings.Color;
             LeafSizeX = settings.LeafSizeX;
             LeafSizeY = (settings.ResolutionY*settings.LeafSizeX)/settings.ResolutionX;
             ResolutionX = settings.ResolutionX;
             ResolutionY = settings.ResolutionY;
+            TwigSpawnChance = settings.TwigSpawnChance;
+            TwigRandomGrowthConeAngle = settings.TwigRandomGrowthConeAngle;
+            ThicknessToTwigLength = settings.ThicknessToTwigLength;
+            LeafStepsRelative = settings.LeafStepsRelative;
         }
     }
 }

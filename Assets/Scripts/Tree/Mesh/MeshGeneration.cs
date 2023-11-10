@@ -82,8 +82,6 @@ namespace Gen
                         pos += currentPosition;
                         vertices.Add(pos);
                         uvs.Add(new Vector2((j * angleStep)/PI2 /*+ angleStart*/, pos.y));
-
-                        
                     }
 
                     //#########Start vertex to triangle calculation
@@ -161,6 +159,8 @@ namespace Gen
                 subMesh.SetVertices(vertices);
                 subMesh.SetUVs(0, uvs);
                 subMesh.SetTriangles(triangles, 0);
+
+                subMesh.RecalculateNormals();
 
                 CombineInstance combineInstance = new CombineInstance();
                 combineInstance.mesh = subMesh;

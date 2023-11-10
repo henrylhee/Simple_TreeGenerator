@@ -13,17 +13,18 @@ public class LeafGeneration
     GameObject leafPreview;
     float stemRelativeThickness;
     AnimationCurve contourCurve;
-    Color color;
     float leafSizeX;
     float leafSizeY;
     int resolutionX;
     int resolutionY;
+    int mimMapLevels;
 
     Texture2D texture;
     Material leafUIMaterial;
     Material leafMaterial;
-    GameObject leaf;
-    Mesh mesh;
+    Mesh leafMesh;
+
+    List<LeafSpawnData> leafSpawns;
 
 
     private void Initialize()
@@ -31,30 +32,30 @@ public class LeafGeneration
         InitializeSettings();
 
         texture = new Texture2D(resolutionX, resolutionY);
-
-        leafUIMaterial = leafPreview.GetComponent<RawImage>().material;
-        leafMaterial = leaf.GetComponent<MeshRenderer>().material;
     }
 
     private void InitializeSettings()
     {
         stemRelativeThickness = LeafModel.Instance.StemRelativeThickness;
         contourCurve = LeafModel.Instance.ContourCurve;
-        color = LeafModel.Instance.Color;
         leafSizeX = LeafModel.Instance.LeafSizeX;
         leafSizeY = LeafModel.Instance.LeafSizeY;
         resolutionX = LeafModel.Instance.ResolutionX;
         resolutionY = LeafModel.Instance.ResolutionY;
     }
 
-    public GameObject Generate(GameObject leafPreView, GameObject leaf)
+    public GameObject GenerateLeaf(GameObject leafPreView)
     {
-        this.leafPreview = leafPreView;
-        this.leaf = leaf;
         Initialize();
+
+        this.leafPreview = leafPreView;
+
         GenerateTexture();
-        GenerateMesh();
-        return leaf;
+        GenerateBaseMesh();
+
+        leafPreview.GetComponent<RawImage>().texture = texture;
+
+        return leafPreview;
     }
 
     private void GenerateTexture()
@@ -97,20 +98,15 @@ public class LeafGeneration
                 }
             }
         }
-        Debug.Log(leafPixelCount);
-        Debug.Log(noLeafPixelCount);
+
         texture.Apply();
 
-        leafUIMaterial.SetTexture("_DataTexture", texture);
-        leafUIMaterial.SetColor("_Color", color);
-
-        leaf.GetComponent<MeshRenderer>().material.SetTexture("_DataTexture", texture);
-        leaf.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
+        leafPreview.GetComponent<RawImage>().material.SetTexture("_DataTexture", texture);
     }
 
-    private void GenerateMesh()
+    private void GenerateBaseMesh()
     {
-        mesh = new Mesh();
+        leafMesh = new Mesh();
 
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
@@ -132,14 +128,42 @@ public class LeafGeneration
         triangles.Add(2);
         triangles.Add(3);
 
-        mesh.SetVertices(vertices);
-        mesh.SetTriangles(triangles, 0);
-        mesh.SetUVs(0, uvs);
+        leafMesh.SetVertices(vertices);
+        leafMesh.SetTriangles(triangles, 0);
+        leafMesh.SetUVs(0, uvs);
 
-        mesh.RecalculateBounds();
-        mesh.RecalculateNormals();
-        mesh.Optimize();
+        leafMesh.RecalculateBounds();
+        leafMesh.RecalculateNormals();
+        leafMesh.Optimize();
+    }
 
-        leaf.GetComponent<MeshFilter>().sharedMesh = mesh;
+    public void SpawnLeaves(List<Branch> branches, Transform treeTransform, GameObject leaves)
+    {
+        LeafSpawner leafSpawner = new LeafSpawner();
+        leafSpawns = leafSpawner.GenerateData(branches);
+
+        GameObject t = new GameObject();
+        CombineInstance[] combine = new CombineInstance[leafSpawns.Count];
+        for(int i = 0; i < leafSpawns.Count; i++)
+        {
+            CombineInstance combineInstance = new CombineInstance();
+            combineInstance.mesh = leafMesh;
+
+            t.transform.position = leafSpawns[i].position;
+            t.transform.rotation = leafSpawns[i].rotation;
+            combineInstance.transform = t.transform.localToWorldMatrix;
+            combine[i] = combineInstance;
+        }
+        GameObject.DestroyImmediate(t);
+
+        //leaves.GetComponent<MeshRenderer>().sharedMaterial = leafMat;
+        leaves.GetComponent<MeshRenderer>().sharedMaterial.SetTexture("_DataTexture", texture);
+
+        leaves.GetComponent<MeshFilter>().sharedMesh = new Mesh();
+        leaves.GetComponent<MeshFilter>().sharedMesh.CombineMeshes(combine,true,true);
+        leaves.GetComponent<MeshFilter>().sharedMesh.RecalculateNormals();
+        leaves.GetComponent<MeshFilter>().sharedMesh.Optimize();
+
+        GameObject.Instantiate(leaves, treeTransform, true);
     }
 }
