@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using Random = UnityEngine.Random;
+
 
 namespace Gen
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class MeshGeneration
     {
-        readonly float thicknessToLength = GraphModel.Instance.ThicknessToSegmentLength;
         readonly int meshDetailLat = GraphModel.Instance.MeshDetailLat;
         readonly float PI2 = Mathf.PI * 2f;
-
 
 
         public Mesh Generate(List<Branch> branches, Transform treeTransform)
@@ -42,7 +36,6 @@ namespace Gen
                 List<int> triangles = new List<int>();
                 List<Vector2> uvs = new List<Vector2>();
 
-                float angleStart = 0;
                 Vector3 currentPosition = branchSceleton.knots[0].position;
                 int knotCount = 0;
                 int vertexCount = 0;
@@ -81,7 +74,7 @@ namespace Gen
                         pos = rotation * pos;
                         pos += currentPosition;
                         vertices.Add(pos);
-                        uvs.Add(new Vector2((j * angleStep)/PI2 /*+ angleStart*/, pos.y));
+                        uvs.Add(new Vector2((j * angleStep)/PI2 /*+ angleStart*/, knot.lengthFromStart/branchSceleton.length));
                     }
 
                     //#########Start vertex to triangle calculation
@@ -177,7 +170,6 @@ namespace Gen
 
         private int GetPolygonCount(float thickness)
         {
-
             return Mathf.Max(3, Mathf.CeilToInt((thickness * meshDetailLat) / GraphModel.Instance.StartThickness));
         }
     }

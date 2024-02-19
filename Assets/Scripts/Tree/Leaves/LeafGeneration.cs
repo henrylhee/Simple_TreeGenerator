@@ -58,6 +58,14 @@ public class LeafGeneration
         return leafPreview;
     }
 
+    public void GenerateLeaf()
+    {
+        Initialize();
+
+        GenerateTexture();
+        GenerateBaseMesh();
+    }
+
     private void GenerateTexture()
     {
         // faster with setpixeldata!!
@@ -101,7 +109,10 @@ public class LeafGeneration
 
         texture.Apply();
 
-        leafPreview.GetComponent<RawImage>().material.SetTexture("_DataTexture", texture);
+        if (leafPreview)
+        {
+            leafPreview.GetComponent<RawImage>().material.SetTexture("_DataTexture", texture);
+        }
     }
 
     private void GenerateBaseMesh()
@@ -164,6 +175,6 @@ public class LeafGeneration
         leaves.GetComponent<MeshFilter>().sharedMesh.RecalculateNormals();
         leaves.GetComponent<MeshFilter>().sharedMesh.Optimize();
 
-        GameObject.Instantiate(leaves, treeTransform, true);
+        GameObject.Instantiate(leaves, treeTransform, false);
     }
 }

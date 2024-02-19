@@ -1,15 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
-using System;
-using System.Linq;
-using Random = UnityEngine.Random;
-//using Unity.Burst.CompilerServices;
-using static UnityEditor.PlayerSettings;
-using System.Security.Cryptography;
-using Palmmedia.ReportGenerator.Core.Parser.Analysis;
-using Unity.VisualScripting;
+using UnityEngine;
+
 
 namespace Gen
 {
@@ -43,7 +34,6 @@ namespace Gen
         [SerializeField]
         private GameObject leaves;
 
-        GameObject leaveContainer;
 
         private bool scriptLoaded = false;
 
@@ -56,7 +46,6 @@ namespace Gen
 
         private LeafGeneration leafGeneration;
         private MeshGeneration meshGeneration;
-        private LeafSpawner leafSpawner;
         
 
 
@@ -112,16 +101,15 @@ namespace Gen
                 else if (spawnLeaves)
                 {
                     spawnLeaves = false;
-                    UnityEditor.EditorApplication.delayCall += () =>
+                    EditorApplication.delayCall += () =>
                     {
-                        //RemoveLeaves();
                         SpawnLeaves();
                     };   
                 }
                 else if (removeLeaves)
                 {
                     removeLeaves = false;
-                    UnityEditor.EditorApplication.delayCall += () =>
+                    EditorApplication.delayCall += () =>
                     {
                         RemoveLeaves();
                     };

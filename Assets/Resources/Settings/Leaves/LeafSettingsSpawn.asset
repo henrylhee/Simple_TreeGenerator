@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01fae0d9cc15f20439cb12e50ed7a6f7, type: 3}
+  m_Name: LeafSettingsSpawn
+  m_EditorClassIdentifier: 
+  OnSettingsChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  stemRelativeThickness: 0
+  contourCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.0023584906
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.087218314
+      value: 0.5448113
+      inSlope: 2.3568883
+      outSlope: 2.3568883
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.36215946
+      outWeight: 0.23918577
+    - serializedVersion: 3
+      time: 0.4673782
+      value: 0.6509434
+      inSlope: -0.94676715
+      outSlope: -0.94676715
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.30882353
+    - serializedVersion: 3
+      time: 0.7069985
+      value: 0.2712264
+      inSlope: -1.5173186
+      outSlope: -1.5173186
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.35185143
+    - serializedVersion: 3
+      time: 0.83511233
+      value: 0.10613207
+      inSlope: -1.0634613
+      outSlope: -1.0634613
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.31159398
+    - serializedVersion: 3
+      time: 0.9988133
+      value: -0.0023584906
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  color: {r: 0, g: 0.4433962, b: 0.06560414, a: 0}
+  leafSizeX: 0.064
+  resolutionX: 64
+  resolutionY: 48
+  twigSpawnChance: 0.373
+  twigRandomGrowthConeAngle: 11
+  thicknessToTwigLength: 5.2
+  leafStepsRelative: 0.096

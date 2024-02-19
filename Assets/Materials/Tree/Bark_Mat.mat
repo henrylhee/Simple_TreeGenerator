@@ -134,8 +134,8 @@ Material:
     - _UVOffsetX: 0.95
     - _UVOffsetY: 1.67
     - _UVSec: 0
-    - _UVTilingX: 0.525
-    - _UVTilingY: 0.1
+    - _UVTilingX: 1
+    - _UVTilingY: 0.272
     - _VoronoiDensity: 39.67
     - _VoronoiOffset: 14.2
     - _ZWrite: 1

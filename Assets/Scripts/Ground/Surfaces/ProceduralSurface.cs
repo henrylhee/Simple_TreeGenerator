@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 
 using static Noise;
 
+
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class ProceduralSurface : MonoBehaviour {
 
