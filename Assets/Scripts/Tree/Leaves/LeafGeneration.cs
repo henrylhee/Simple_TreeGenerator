@@ -148,7 +148,7 @@ public class LeafGeneration
         leafMesh.Optimize();
     }
 
-    public void SpawnLeaves(List<Branch> branches, Transform treeTransform, GameObject leaves)
+    public void SpawnLeaves(List<Branch> branches, Transform treeTransform, GameObject leafTemplate)
     {
         LeafSpawner leafSpawner = new LeafSpawner();
         leafSpawns = leafSpawner.GenerateData(branches);
@@ -168,13 +168,14 @@ public class LeafGeneration
         GameObject.DestroyImmediate(t);
 
         //leaves.GetComponent<MeshRenderer>().sharedMaterial = leafMat;
+
+        GameObject leaves = GameObject.Instantiate(leafTemplate, treeTransform);
+
         leaves.GetComponent<MeshRenderer>().sharedMaterial.SetTexture("_DataTexture", texture);
 
         leaves.GetComponent<MeshFilter>().sharedMesh = new Mesh();
         leaves.GetComponent<MeshFilter>().sharedMesh.CombineMeshes(combine,true,true);
         leaves.GetComponent<MeshFilter>().sharedMesh.RecalculateNormals();
         leaves.GetComponent<MeshFilter>().sharedMesh.Optimize();
-
-        GameObject.Instantiate(leaves, treeTransform, false);
     }
 }

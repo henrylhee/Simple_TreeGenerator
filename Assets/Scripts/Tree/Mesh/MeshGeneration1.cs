@@ -6,7 +6,7 @@ using static UnityEditor.PlayerSettings;
 namespace Gen
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public class MeshGeneration
+    public class MeshGeneration1
     {
         readonly int meshDetailLat = GraphModel.Instance.MeshDetailLat;
         readonly float PI2 = Mathf.PI * 2f;
@@ -28,7 +28,7 @@ namespace Gen
             int branchCount = 0;
 
             Debug.Log("start thickness: " + meshSceleton.sceleton[0].knots[0].thickness);
-            Debug.Log("start polygons: " + GetVertexCount(meshSceleton.sceleton[0].knots[0].thickness));
+            Debug.Log("start polygons: " + GetPolygonCount(meshSceleton.sceleton[0].knots[0].thickness));
 
             //foreach (BranchSceleton branchSceleton in meshSceleton.sceleton)
             foreach (BranchSceleton branchSceleton in meshSceleton.sceleton)
@@ -42,8 +42,8 @@ namespace Gen
                 int vertexCount = 0;
 
                 
-                int vertexCountLevel = GetVertexCount(branchSceleton.knots[0].thickness);
-                int vertexCountLastLevel;
+                int polygonCount = GetPolygonCount(branchSceleton.knots[0].thickness);
+                int polygonCountOld;
                 float thickness;
                 float length = 0;
  
@@ -52,11 +52,11 @@ namespace Gen
                 foreach (Knot knot in branchSceleton.knots)
                 {                  
                     thickness = knot.thickness;
-                    vertexCountLastLevel = vertexCountLevel;
-                    vertexCountLevel = GetVertexCount(knot.thickness);
+                    polygonCountOld = polygonCount;
+                    polygonCount = GetPolygonCount(knot.thickness);
 
-                    float angleStep = PI2 / (vertexCountLevel - 1);
-                    float angleStepOld = PI2 / (vertexCountLastLevel - 1);
+                    float angleStep = PI2 / polygonCount;
+                    float angleStepOld = PI2 / polygonCountOld;
                     Quaternion rotation = Quaternion.FromToRotation(Vector3.up, knot.direction);
 
                     currentPosition = knot.position;
@@ -68,7 +68,7 @@ namespace Gen
                     }
 
                     // <= because extra vertex for uv mapping
-                    for (int j = 0; j < vertexCountLevel; j++)
+                    for (int j = 0; j < polygonCount; j++)
                     {
                         Vector3 pos = new Vector3(Mathf.Cos(j * angleStep /*+ angleStart*/), 0f, Mathf.Sin(j * angleStep /*+ angleStart*/));
                         pos *= thickness;
@@ -82,81 +82,68 @@ namespace Gen
                     if (knotCount > 0)
                     {
                         // Generate Triangles - No polygon decrease
-                        if(vertexCountLevel == vertexCountLastLevel)
+                        if(polygonCount == polygonCountOld)
                         {
-                            for (int j = 0; j < vertexCountLevel - 2; j++)
+                            for (int j = 0; j < polygonCount; j++)
                             {
-                                triangles.Add(vertexCount - vertexCountLevel + j);
+                                triangles.Add(vertexCount - polygonCountOld + j);
                                 triangles.Add(vertexCount + j);
-                                triangles.Add(vertexCount - vertexCountLevel + j + 1);
-                                triangles.Add(vertexCount - vertexCountLevel + j + 1);
+                                triangles.Add(vertexCount - polygonCountOld + (j + 1) % polygonCount);
+                                triangles.Add(vertexCount - polygonCountOld + (j + 1) % polygonCount);
                                 triangles.Add(vertexCount + j);
-                                triangles.Add(vertexCount + j + 1);
+                                triangles.Add(vertexCount + (j + 1) % polygonCount);
                             }
-
-                            //add extra quad for uv mapping
-                            triangles.Add(vertexCount - 2);
-                            triangles.Add(vertexCount + vertexCountLevel - 2);
-                            triangles.Add(vertexCount - 1);
-                            triangles.Add(vertexCount - 1);
-                            triangles.Add(vertexCount + vertexCountLevel - 2);
-                            triangles.Add(vertexCount + vertexCountLevel - 1);
                         }
                         // Generate Triangles; generate helper knot - Polygon decrease
                         else
                         {
-                            int vertexOldIndex = 1;
-                            for (int vertexIndex = 0; vertexIndex < vertexCountLevel - 2; vertexIndex++)
+                            int polygonOldIndex = 1;
+                            for (int polygonIndex = 0; polygonIndex < polygonCount - 1; polygonIndex++)
                             {
-                                if (vertexIndex * angleStep < vertexOldIndex * angleStepOld)
+                                if (polygonIndex * angleStep < polygonOldIndex * angleStepOld)
                                 {
-                                    triangles.Add(vertexCount + vertexIndex);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex - 1);
+                                    triangles.Add(vertexCount + polygonIndex);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex - 1);
 
-                                    triangles.Add(vertexCount + vertexIndex);
-                                    triangles.Add(vertexCount + vertexIndex + 1);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex);
+                                    triangles.Add(vertexCount + polygonIndex);
+                                    triangles.Add(vertexCount + polygonIndex + 1);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex);
                                 }
                                 else
                                 {
-                                    Debug.Log("++++++ vertexCountLevel: "+ vertexCountLevel);
-                                    Debug.Log("vertexCountLevelOld: " + vertexCountLastLevel);
-                                    Debug.Log("angleStep: " + angleStep);
-                                    Debug.Log("angleStepOld: " + angleStepOld);
-                                    Debug.Log("vertexIndex: " + vertexIndex);
-                                    vertexOldIndex++;
+                                    polygonOldIndex++;
 
-                                    triangles.Add(vertexCount + vertexIndex);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex - 1);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex - 2);
+                                    triangles.Add(vertexCount + polygonIndex);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex - 1);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex - 2);
 
-                                    triangles.Add(vertexCount + vertexIndex);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex - 1);
+                                    triangles.Add(vertexCount + polygonIndex);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex - 1);
 
-                                    triangles.Add(vertexCount + vertexIndex);
-                                    triangles.Add(vertexCount + vertexIndex + 1);
-                                    triangles.Add(vertexCount - vertexCountLastLevel + vertexOldIndex);
+                                    triangles.Add(vertexCount + polygonIndex);
+                                    triangles.Add(vertexCount + polygonIndex + 1);
+                                    triangles.Add(vertexCount - polygonCountOld + polygonOldIndex);
 
                                 }
-                                vertexOldIndex++;
+                                polygonOldIndex++;
                             }
 
-                            triangles.Add(vertexCount + vertexCountLevel - 2);
-                            triangles.Add(vertexCount - 3);
+                            triangles.Add(vertexCount + polygonCount - 1);
+                            triangles.Add(vertexCount - 1);
                             triangles.Add(vertexCount - 2);
 
-                            triangles.Add(vertexCount + vertexCountLevel - 2);
-                            triangles.Add(vertexCount - 2);
+                            triangles.Add(vertexCount + polygonCount - 1);
+                            triangles.Add(vertexCount - polygonCountOld);
                             triangles.Add(vertexCount - 1);
 
-                            triangles.Add(vertexCount + vertexCountLevel - 1);
-                            triangles.Add(vertexCount + vertexCountLevel - 2);
+                            triangles.Add(vertexCount + polygonCount - 1);
                             triangles.Add(vertexCount);
+                            triangles.Add(vertexCount - polygonCountOld);
                         }
                     }
-                    vertexCount += vertexCountLevel;
+                    vertexCount += polygonCount;
                     knotCount++;
                 }
 
@@ -182,10 +169,9 @@ namespace Gen
             return treeMesh;
         }
 
-        private int GetVertexCount(float thickness)
+        private int GetPolygonCount(float thickness)
         {
-            int polygonCount = Mathf.Max(3, Mathf.CeilToInt((thickness * meshDetailLat) / GraphModel.Instance.StartThickness));
-            return polygonCount + 1;
+            return Mathf.Max(3, Mathf.CeilToInt((thickness * meshDetailLat) / GraphModel.Instance.StartThickness));
         }
     }
 }

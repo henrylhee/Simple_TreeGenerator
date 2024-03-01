@@ -20,9 +20,11 @@ public class Spawner : MonoBehaviour
                 Debug.Log(hit.transform.name);
                 Debug.Log(hit.point);
 
-                GameObject tree = Instantiate(treeTemplate, hit.point, Quaternion.identity);
+                GameObject tree = Instantiate(treeTemplate);
+
                 tree.GetComponent<Tree>().Initialize();
                 tree.GetComponent<Tree>().Spawn();
+                tree.transform.position = hit.point;
             }
         }
     }
