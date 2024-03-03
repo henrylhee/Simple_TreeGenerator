@@ -94,7 +94,7 @@ namespace Gen
         private float deltaT = 0.1f;
         public float DeltaT { get => deltaT; }
 
-        //[SerializeField, Range(0f, 1f)]
+        [SerializeField, Range(0f, 1f)]
         private float curvatureFactor = 0.2f;
         public float CurvatureFactor { get => curvatureFactor; }
 

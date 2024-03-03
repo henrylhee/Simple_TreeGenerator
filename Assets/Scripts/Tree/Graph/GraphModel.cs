@@ -47,8 +47,8 @@ namespace Gen
 
 
         //Mesh settings
-        public float DeltaT { get; private set; }
-        public float CurvatureFactor { get; private set; }
+        //public float DeltaT { get; private set; }
+        //public float CurvatureFactor { get; private set; }
         public float MeshDetailLong { get; private set; }
         public int MeshDetailLat { get; private set; }
 
@@ -119,8 +119,8 @@ namespace Gen
             MinThicknessAbsolute = settings.StartThickness * settings.MinThicknessRelative;
 
             //Mesh settings
-            DeltaT = settings.DeltaT;
-            CurvatureFactor = settings.CurvatureFactor;
+            //DeltaT = settings.DeltaT;
+            //CurvatureFactor = settings.CurvatureFactor;
             MeshDetailLong = settings.MeshDetailLong;
             MeshDetailLat = settings.MeshDetailLat;
 
