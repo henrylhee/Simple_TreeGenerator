@@ -29,7 +29,10 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer
         if (property.isExpanded)
         {
             var data = property.objectReferenceValue as ScriptableObject;
-            if (data == null) return EditorGUIUtility.singleLineHeight;
+            if (data == null) {
+                return EditorGUIUtility.singleLineHeight;
+            }
+
             SerializedObject serializedObject = new SerializedObject(data);
             SerializedProperty prop = serializedObject.GetIterator();
             if (prop.NextVisible(true))
@@ -38,6 +41,8 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer
                 {
                     if (prop.name == "m_Script") continue;
                     var subProp = serializedObject.FindProperty(prop.name);
+
+                    // Seems a bit messy that within the function your in, you call the same function but overloaded
                     float height = EditorGUI.GetPropertyHeight(subProp, null, true) + EditorGUIUtility.standardVerticalSpacing;
                     totalHeight += height;
                 }
@@ -52,11 +57,12 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer
 
     const int buttonWidth = 66;
 
-    static readonly List<string> ignoreClassFullNames = new List<string> { "TMPro.TMP_FontAsset" };
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
+        List<string> ignoreClassFullNames = new List<string> { "TMPro.TMP_FontAsset" };
         EditorGUI.BeginProperty(position, label, property);
+        // This should be with type hinting
         var type = GetFieldType();
 
         if (type == null || ignoreClassFullNames.Contains(type.FullName))
@@ -274,12 +280,13 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer
         EditorGUILayout.BeginHorizontal();
         objectReferenceValue = EditorGUILayout.ObjectField(new GUIContent(" "), objectReferenceValue, typeof(T), false) as T;
 
+        // clean code dictates that you shouldn't have things like "bool" as a param, you should have two functions one true one false and then call them from a wrapper function
         if (objectReferenceValue != null)
         {
             EditorGUILayout.EndHorizontal();
             if (isExpanded)
             {
-
+                // whats this, if its meant to do nothing, maybe early return
             }
         }
         else
@@ -287,6 +294,7 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer
             if (GUILayout.Button("Create", GUILayout.Width(buttonWidth)))
             {
                 string selectedAssetPath = "Assets";
+                //
                 var newAsset = CreateAssetWithSavePrompt(typeof(T), selectedAssetPath);
                 if (newAsset != null)
                 {
@@ -313,6 +321,8 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer
         return asset;
     }
 
+    // If this returns type "type" thats not very descriptive, you need a better name, need error check on generic arguements doing [0]
+    // Generally you need keep to coding standards with { } more 
     Type GetFieldType()
     {
         Type type = fieldInfo.FieldType;
@@ -321,6 +331,7 @@ public class ExtendedScriptableObjectDrawer : PropertyDrawer
         return type;
     }
 
+    // in general i feel like your working too much with stuff that could have side effects and lead to bugs, because of race conditions 
     static bool AreAnySubPropertiesVisible(SerializedProperty property)
     {
         var data = (ScriptableObject)property.objectReferenceValue;
