@@ -12,10 +12,16 @@ Thats how I implemented it as well. After a split the node length is decreased a
 ![alt text](/Assets/Resources/Pictures/GraphSettings.PNG?raw=true)
 
 ## Mesh Generation
-Each trunk generates a mesh by adding circular structures of vertices with certain nodes at its center.
+Each trunk generates a mesh by adding circular structures of vertices with a node at its center.
 To decrease the amount of generated vertices a new set of vertices is only created when the curvature of the growth exceeds a certain value.
 This, as well as the density of vertices for a circular structure, is adjustable in the settings.
 
-![alt text](/Assets/Resources/Pictures/TreeMeshExample.PNG?raw=true)
+![alt text](/Assets/Resources/Pictures/TreeMeshExample.png?raw=true)
+
+## Leaf Generation
+My main focus in this project was the mesh generation of the trunks as well as using no extra resources like textures.
+Thats why I chose to simply generate a leaf with Unity`s AnimationCurve class. In the leaf settings you can set a few points to generate one half of the leafs outline.
+This information is mirrored for the whole leaf. From this a texture with adjustable resolution is generated. Each pixel basically only holding information if its part of the leaf or not.
+The mesh of the leaf is a set of 2 triangles each containing 3 vertices. All leaves are part of the same mesh with a shared material to optimize performance.
 
 
