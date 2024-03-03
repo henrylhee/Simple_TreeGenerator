@@ -13,7 +13,7 @@ As such this is how I choose to implement it as well. After a split, the node le
 ![alt text](/Assets/Resources/Pictures/GraphSettings.PNG?raw=true)
 
 ## Mesh Generation
-Each trunk generates a mesh by adding circular structures of vertices with a node at its center.
+Each trunk generates a mesh by adding circular structures of vertices with nodes at its center.
 In order to decrease the amount of generated vertices, a new set of vertices is only created when the curvature of the growth exceeds a certain value.
 This, as well as the density of vertices for a circular structure, is adjustable in the settings.
 
